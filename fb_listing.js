@@ -1,4 +1,5 @@
 let listingQueue = [];
+let listingData = [];
 
 const waitAndExecute = (condition, callback) => {
   let timer = setInterval(() => {
@@ -25,15 +26,49 @@ const moveDown = (element, count) => {
   return result;
 }
 
+const click = (element) => {
+  element.dispatchEvent(new Event('click', { bubbles: true }));
+}
+
 const processItem = (element) => {
   element = moveDown(element, 5);
-  element.dispatchEvent(new Event('click', { bubbles: true }));
+  click(element);
+
   waitAndExecute(
     () => document.getElementsByClassName("__fb-light-mode").length === 6,
     () => {
-      console.log("BOO");
+      let e = document.getElementsByClassName("__fb-light-mode")[4];
+      waitAndExecute(
+        () => moveDown(e, 2).childNodes[1].getAttribute("aria-busy") !== "true",
+        () => {
+          let popupDiv = moveDown(e, 2).childNodes[1];
+          let parent = moveDown(popupDiv, 4).nextSibling;
+          let infoDiv = moveDown(parent.nextSibling, 3);
+
+          let data = {};
+          data.url = infoDiv.querySelector('a').href;
+          data.image = infoDiv.querySelector('a img').src;
+
+          let spans = infoDiv.querySelectorAll("a span");
+          data.title = spans[0].textContent;
+          data.sku = spans[6].firstChild.textContent;
+          listingData.push(data);
+
+          click(parent.firstChild);
+          processNext();
+        }
+      );
     }
   );
+}
+
+const processNext = () => {
+  const item = listingQueue.shift();
+  if (item) {
+    setTimeout(() => processItem(item));
+  } else {
+    console.log(listingData);
+  }
 }
 
 const start = () => {
@@ -47,7 +82,7 @@ const start = () => {
       }
     }
   }
-  processItem(listingQueue[0]);
+  processNext();
 }
 
 window.onload = function () {
