@@ -10,8 +10,12 @@
   "host_permissions": ["https://*/"],
   "content_scripts": [
    {
-     "matches": ["https://*.facebook.com/*"],
+     "matches": ["https://www.facebook.com/marketplace/create/item"],
      "js": ["content_script.js"]
+   },
+   {
+     "matches": ["https://www.facebook.com/marketplace/you/selling"],
+     "js": ["fb_listing.js"]
    }
  ]
 }
