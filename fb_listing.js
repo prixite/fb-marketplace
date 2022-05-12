@@ -10,6 +10,28 @@ const waitAndExecute = (condition, callback) => {
   }, 100);
 }
 
+setInterval(() => {
+  if (document.getElementsByClassName("__fb-light-mode").length === 6) {
+    let e = document.getElementsByClassName("__fb-light-mode")[4];
+    waitAndExecute(
+      () => moveDown(e, 2).childNodes[1].getAttribute("aria-busy") !== "true",
+      () => {
+        let popupDiv = moveDown(e, 2).childNodes[1];
+        let parent = moveDown(popupDiv, 4).nextSibling;
+        let infoDiv = moveDown(parent.nextSibling, 3);
+        if (!infoDiv.querySelector('a.dropified')) {
+          const anchor = document.createElement('a');
+          anchor.href = 'https://app.dropified.com';
+          anchor.appendChild(document.createTextNode("Open Product in Dropified"));
+          anchor.classList.add('dropified');
+          anchor.target = "_blank";
+          infoDiv.appendChild(anchor);
+        }
+      }
+    );
+  }
+}, 100);
+
 const moveUp = (element, count) => {
   let result = element;
   for (let i=0; i<count; i++) {
